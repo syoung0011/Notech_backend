@@ -7,3 +7,5 @@ def api_logging() -> logging.Logger:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     return logging.getLogger("api")
+
+logger = api_logging()

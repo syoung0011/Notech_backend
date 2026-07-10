@@ -4,11 +4,10 @@ from fastapi import FastAPI
 
 from db.aiomysql import create_tables
 from routers.users import router as users_router
-from utils.loggers import api_logging
-from utils.response import success_response
-from utils.middleware import register_middleware
-
-logger = api_logging()
+from utils.exceptions import register_exception_handlers
+from utils.loggers import logger
+from utils.responses import success_response
+from utils.middlewares import register_middlewares
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -20,7 +19,8 @@ async def lifespan(app: FastAPI):
     yield
     logger.info("✅ 应用关闭")
 app = FastAPI(lifespan=lifespan)
-register_middleware(app,logger)
+register_middlewares(app,logger)
+register_exception_handlers(app,logger)
 
 API_VER="/api/v1"
 routers=[users_router,]

@@ -1,10 +1,9 @@
-import time
 
+import time
 from fastapi import FastAPI,Request
 from starlette.middleware.cors import CORSMiddleware
 
-
-def register_middleware(app: FastAPI,logger)->None:
+def register_middlewares(app: FastAPI, logger)->None:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -16,13 +15,14 @@ def register_middleware(app: FastAPI,logger)->None:
     @app.middleware("http")
     async def _logging_middleware(request: Request, call_next):
         start=time.time()
-        response = await call_next(request)
-        end=time.time()
+        end = time.time()
         process_ms = round((end - start) * 1000, 2)
+
         method=request.method
         url=str(request.url)
         ip = request.client.host if request.client else "unknown"
         params = str(request.query_params) if request.query_params else ""
+        response = await call_next(request)
         msg = (
             f"{method} {url} | IP: {ip} | Params: {params} | "
             f"Status: {response.status_code} | Time: {process_ms}ms"
